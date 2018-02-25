@@ -1,11 +1,10 @@
-from flask_uploads import UploadSet, IMAGES
+from flask_wtf.file import FileAllowed, FileRequired, FileField 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 class UploadForm(FlaskForm):
     upload = FileField('image', validators=[
         FileRequired(),
-        FileAllowed(['jpg', 'png'], 'Images only!')
+        FileAllowed(['jpg','png'], 'Images only!')
     ])
     
     

@@ -9,6 +9,8 @@ from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
 from forms import UploadForm
+ 
+
 
 ###
 # Routing for your application.
@@ -28,8 +30,7 @@ def about():
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
-    if not session.get('logged_in'):
-        abort(401)
+     
 
     # Instantiate your form class
     uploadForm = UploadForm()
@@ -60,7 +61,25 @@ def login():
             return redirect(url_for('upload'))
     return render_template('login.html', error=error)
 
-
+@app.route('/files')
+def files():
+    filenames = os.listdir('./app/static/uploads/')
+    images=[]
+    for x in filenames:
+        i = x.split(".")
+        if i == ("png") or i == ("jpg"):
+            images.append(x)
+            
+    return render_template('files.html', files=images)
+    
+def get_uploaded_images():
+    uploads = []
+    for cwd, subdir, files in os.walk('./app/static/uploads/'):
+        for file in files:
+            print os.path.join(subdir, file) 
+            uploads.append(file)
+    return uploads
+    
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
@@ -98,12 +117,10 @@ def add_header(response):
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-
 @app.errorhandler(404)
 def page_not_found(error):
     """Custom 404 page."""
     return render_template('404.html'), 404
-
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port="8080")
